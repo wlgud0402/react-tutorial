@@ -9,6 +9,7 @@ class App extends Component {
     super(props);
     this.state = {
       mode: "read",
+      selected_content_id: 2,
       subject: { title: "WEB", sub: "World Wide Web!!" },
       welcome: { title: "Welcome", desc: "Hello, React!!" },
       contents: [
@@ -25,17 +26,28 @@ class App extends Component {
       _title = this.state.welcome.title;
       _desc = this.state.welcome.desc;
     } else if (this.state.mode === "read") {
-      _title = this.state.contents[0].title;
-      _desc = this.state.contents[0].desc;
+      let i = 0;
+      while (i < this.state.contents.length) {
+        let data = this.state.contents[i];
+        if (data.id === this.state.selected_content_id) {
+          _title = data.title;
+          _desc = data.desc;
+          break;
+        }
+        i++;
+      }
     }
     return (
       <div className="App">
-        {/* <Subject
+        <Subject
           title={this.state.subject.title}
           sub={this.state.subject.sub}
-        ></Subject> */}
+          onChangePage={function () {
+            this.setState({ mode: "welcome" });
+          }.bind(this)}
+        ></Subject>
         {/* <Subject title="React" sub="For UI"></Subject> */}
-        <header>
+        {/* <header>
           <h1>
             <a
               href="/"
@@ -53,8 +65,16 @@ class App extends Component {
             </a>
           </h1>
           {this.state.subject.sub}
-        </header>
-        <TOC data={this.state.contents}></TOC>
+        </header> */}
+        <TOC
+          onChangePage={function (id) {
+            this.setState({
+              mode: "read",
+              selected_content_id: Number(id),
+            });
+          }.bind(this)}
+          data={this.state.contents}
+        ></TOC>
         <Content title={_title} desc={_desc}></Content>
       </div>
     );
