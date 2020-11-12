@@ -17,7 +17,7 @@ class TOC extends Component {
               this.props.onChangePage(e.target.dataset.id);
             }.bind(this)}
           >
-            {/* 방법2 =>  */}
+            {/* 방법2 => bind에 전해주는 인자를 통해 id를 전달 */}
             {/* <a
             href={"/content/" + data[i].id}
             onClick={function (id, e) {

@@ -1,14 +1,16 @@
 import React, { Component } from "react";
 import TOC from "./components/TOC";
-import Content from "./components/Content";
+import ReadContent from "./components/ReadContent";
 import Subject from "./components/Subject";
 import "./App.css";
+import Control from "./components/Control";
+import CreateContent from "./components/CreateContent";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mode: "read",
+      mode: "create",
       selected_content_id: 2,
       subject: { title: "WEB", sub: "World Wide Web!!" },
       welcome: { title: "Welcome", desc: "Hello, React!!" },
@@ -21,10 +23,12 @@ class App extends Component {
   }
   render() {
     let _title,
-      _desc = null;
+      _desc,
+      _article = null;
     if (this.state.mode === "welcome") {
       _title = this.state.welcome.title;
       _desc = this.state.welcome.desc;
+      _article = <ReadContent title={_title} desc={_desc}></ReadContent>;
     } else if (this.state.mode === "read") {
       let i = 0;
       while (i < this.state.contents.length) {
@@ -36,6 +40,16 @@ class App extends Component {
         }
         i++;
       }
+      _article = <ReadContent title={_title} desc={_desc}></ReadContent>;
+    } else if (this.state.mode === "create") {
+      _article = (
+        <CreateContent
+          onSubmit={function (_title, _desc) {
+            //add content to this.state.contents
+            console.log(_title, _desc);
+          }.bind(this)}
+        ></CreateContent>
+      );
     }
     return (
       <div className="App">
@@ -75,7 +89,12 @@ class App extends Component {
           }.bind(this)}
           data={this.state.contents}
         ></TOC>
-        <Content title={_title} desc={_desc}></Content>
+        <Control
+          onChangeMode={function (_mode) {
+            this.setState({ mode: _mode });
+          }.bind(this)}
+        ></Control>
+        {_article}
       </div>
     );
   }
