@@ -5,10 +5,12 @@ import Subject from "./components/Subject";
 import "./App.css";
 import Control from "./components/Control";
 import CreateContent from "./components/CreateContent";
+import UpdateContent from "./components/UpdateContent";
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.max_content_id = 3;
     this.state = {
       mode: "create",
       selected_content_id: 2,
@@ -21,7 +23,19 @@ class App extends Component {
       ],
     };
   }
-  render() {
+
+  getReadContent() {
+    let i = 0;
+    while (i < this.state.contents.length) {
+      let data = this.state.contents[i];
+      if (data.id === this.state.selected_content_id) {
+        return data;
+        break;
+      }
+      i++;
+    }
+  }
+  getContent() {
     let _title,
       _desc,
       _article = null;
@@ -30,27 +44,36 @@ class App extends Component {
       _desc = this.state.welcome.desc;
       _article = <ReadContent title={_title} desc={_desc}></ReadContent>;
     } else if (this.state.mode === "read") {
-      let i = 0;
-      while (i < this.state.contents.length) {
-        let data = this.state.contents[i];
-        if (data.id === this.state.selected_content_id) {
-          _title = data.title;
-          _desc = data.desc;
-          break;
-        }
-        i++;
-      }
-      _article = <ReadContent title={_title} desc={_desc}></ReadContent>;
+      let _content = this.getReadContent();
+      _article = (
+        <ReadContent
+          title={_content._title}
+          desc={_content._desc}
+        ></ReadContent>
+      );
     } else if (this.state.mode === "create") {
+      _content = this.getReadContent();
       _article = (
         <CreateContent
+          data={_content}
           onSubmit={function (_title, _desc) {
-            //add content to this.state.contents
+            this.max_content_id++;
+            let _contents = this.state.contents.concat({
+              id: this.max_content_id,
+              title: _title,
+              desc: _desc,
+            });
+            this.setState({
+              contents: _contents,
+            });
             console.log(_title, _desc);
           }.bind(this)}
         ></CreateContent>
       );
     }
+    return _article;
+  }
+  render() {
     return (
       <div className="App">
         <Subject
@@ -61,25 +84,6 @@ class App extends Component {
           }.bind(this)}
         ></Subject>
         {/* <Subject title="React" sub="For UI"></Subject> */}
-        {/* <header>
-          <h1>
-            <a
-              href="/"
-              onClick={function (e) {
-                console.log(e);
-                e.preventDefault(); //이벤트가 발생하구 페이지 리로드를 막아준다.
-                // this.state.mode = "welcome";
-                this.setState({
-                  mode: "welcome",
-                });
-                // debugger;
-              }.bind(this)}
-            >
-              {this.state.subject.title}
-            </a>
-          </h1>
-          {this.state.subject.sub}
-        </header> */}
         <TOC
           onChangePage={function (id) {
             this.setState({
@@ -94,7 +98,7 @@ class App extends Component {
             this.setState({ mode: _mode });
           }.bind(this)}
         ></Control>
-        {_article}
+        {this.getContent()}
       </div>
     );
   }
